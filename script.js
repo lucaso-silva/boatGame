@@ -3,8 +3,14 @@ let boatXPosition = 25;
 let boatYPosition = 32;
 let flagXPosition = 180;
 let flagYPosition = 190;
-let holeXPosition = 425;
-let holeYPosition = 225;
+let holeXPosition = 225;
+let holeYPosition = 325;
+let xSmallIceberg = 415;
+let ySmallIceberg = 305;
+let xMediumIceberg = 310;
+let yMediumIceberg = 105;
+let xBigIceberg = 425;
+let yBigIceberg = 55;
 
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
@@ -35,6 +41,9 @@ function drawBoard() {
     drawBoat(boatXPosition, boatYPosition);
     drawHole(holeXPosition, holeYPosition);
     drawFlagPoint(flagXPosition, flagYPosition);
+    drawSmallIceberg(xSmallIceberg, ySmallIceberg);
+    drawMediumIceberg(xMediumIceberg, yMediumIceberg);
+    drawBigIceberg(xBigIceberg, yBigIceberg);
 }
 
 
@@ -137,5 +146,73 @@ function drawFlagPoint(x,y) {
     ctx.lineTo(x-2,y-20);
     ctx.fill();
     ctx.stroke();
+    ctx.restore();
+}
+
+function drawSmallIceberg(x,y) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = "PaleTurquoise";
+    ctx.strokeStyle = "DarkBlue";
+
+    ctx.moveTo(x,y);
+    ctx.lineTo(x,y);
+    ctx.lineTo(x+20,y+4);
+    ctx.lineTo(x+25,y+25);
+    ctx.lineTo(x+15,y+40);
+    ctx.lineTo(x-5,y+30);
+    ctx.lineTo(x,y+20);
+    ctx.lineTo(x-5,y+10);
+    ctx.lineTo(x,y);
+    ctx.fill();
+    ctx.stroke(); 
+    ctx.restore();
+}
+
+function drawMediumIceberg(x,y) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = "PaleTurquoise";
+    ctx.strokeStyle = "DarkBlue";
+
+    ctx.moveTo(x,y);
+    ctx.lineTo(x,y);
+    ctx.lineTo(x-5,y+45);
+    ctx.lineTo(x+5,y+60);
+    ctx.lineTo(x-5,y+80);
+    ctx.lineTo(x+10,y+90);
+    ctx.lineTo(x+25,y+80);
+    ctx.lineTo(x+35,y+45);
+    ctx.lineTo(x+35,y+25);
+    ctx.lineTo(x+25,y+20);
+    ctx.lineTo(x+30,y+5);
+    ctx.lineTo(x,y);
+    ctx.fill();
+    ctx.stroke(); 
+    ctx.restore();
+}
+
+function drawBigIceberg(x,y) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = "PaleTurquoise";
+    ctx.strokeStyle = "DarkBlue";
+
+    ctx.moveTo(x,y);
+    ctx.lineTo(x,y);
+    ctx.lineTo(x-15,y+15);
+    ctx.lineTo(x-5,y+55);
+    ctx.lineTo(x-15,y+70);
+    ctx.lineTo(x-20,y+105);
+    ctx.lineTo(x-10,y+120);
+    ctx.lineTo(x-15,y+130);
+    ctx.lineTo(x+15,y+135);
+    ctx.lineTo(x+10,y+105);
+    ctx.lineTo(x+20,y+80);
+    ctx.lineTo(x+20,y+30);
+    ctx.lineTo(x,y);
+
+    ctx.fill();
+    ctx.stroke(); 
     ctx.restore();
 }
