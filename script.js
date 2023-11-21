@@ -11,13 +11,21 @@ let xMediumIceberg = 310;
 let yMediumIceberg = 105;
 let xBigIceberg = 425;
 let yBigIceberg = 55;
+let flagsCollected = 0;
+let distanceBoatAndFlag;
+let distanceBoatAndHole;
+let gameOver;
+
+    console.log("x boat: " + boatXPosition + " - y boat: " + boatYPosition);
+    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
+    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
 
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
     drawBoard();
 }
 
-function drawBoard() {
+function drawBoard(gameOver) {
     ctx.save();
     ctx.clearRect(0,0,600,400);
     ctx.beginPath();
@@ -44,6 +52,14 @@ function drawBoard() {
     drawSmallIceberg(xSmallIceberg, ySmallIceberg);
     drawMediumIceberg(xMediumIceberg, yMediumIceberg);
     drawBigIceberg(xBigIceberg, yBigIceberg);
+
+    if(gameOver) {
+        ctx.font = "60px Georgia";
+        ctx.fillStyle = "red";
+        ctx.strokeStyle = "black"
+        ctx.fillText("Game Over", 150,200);
+        ctx.strokeText("Game Over", 150,200);
+    }
 }
 
 
@@ -216,3 +232,63 @@ function drawBigIceberg(x,y) {
     ctx.stroke(); 
     ctx.restore();
 }
+
+function moveBoat(e) {
+    gameOver = false;
+    if(e.key == "ArrowUp") {
+        boatYPosition -= 50;
+
+        if(boatYPosition < 0) {
+            boatYPosition = 32;
+        }
+
+    } else if (e.key == "ArrowDown") {
+        boatYPosition += 50;
+
+        if(boatYPosition > 400) {
+            boatYPosition = 382;
+        }
+
+    } else if (e.key == "ArrowLeft") {
+        boatXPosition -= 50;
+
+        if(boatXPosition < 0) {
+            boatXPosition = 25;
+        }
+
+    } else if(e.key == "ArrowRight") {
+        boatXPosition += 50;
+
+        if(boatXPosition > 600) {
+            boatXPosition = 575;
+        }
+    }
+    
+    distanceBoatAndFlag = distanceCalculation(boatXPosition, flagXPosition, boatYPosition, flagYPosition);
+    if(distanceBoatAndFlag < 15) {
+        flagXPosition = -10;
+        flagYPosition = -10;
+
+        flagsCollected++;
+
+        document.getElementById("flagsCounter").innerHTML = "Flags collected: " + flagsCollected;
+    }
+
+    distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
+    if(distanceBoatAndHole < 15) {
+        boatXPosition = -10;
+        boatYPosition = -10;
+        gameOver = true;
+    }
+    console.log("--");
+    console.log("x boat: " + boatXPosition + " - y boat: " + boatYPosition);
+    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
+    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    console.log("distance boat/flag: " + distanceBoatAndFlag);
+    console.log("distance boat/hole: " + distanceBoatAndHole);
+    drawBoard(gameOver);
+}
+
+function distanceCalculation(x1,y1,x2,y2) {
+    return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+} 
