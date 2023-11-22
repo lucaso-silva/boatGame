@@ -1,28 +1,47 @@
 let ctx;
-let boatXPosition = 25;
-let boatYPosition = 32;
-let flagXPosition = 180;
-let flagYPosition = 190;
-let holeXPosition = 225;
-let holeYPosition = 325;
-let xSmallIceberg = 415;
-let ySmallIceberg = 305;
-let xMediumIceberg = 310;
-let yMediumIceberg = 105;
-let xBigIceberg = 425;
-let yBigIceberg = 55;
+let boatXPosition;
+let boatYPosition;
+let flagXPosition;
+let flagYPosition;
+let holeXPosition;
+let holeYPosition;
+let xSmallIceberg;
+let ySmallIceberg;
+//let xMediumIceberg = 310;
+//let yMediumIceberg = 105;
+//let xBigIceberg = 425;
+//let yBigIceberg = 55;
 let flagsCollected = 0;
 let distanceBoatAndFlag;
 let distanceBoatAndHole;
-let gameOver;
+let distanceBoatSmallIceberg;
+let gameOver = false;
 
-    console.log("x boat: " + boatXPosition + " - y boat: " + boatYPosition);
-    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+function createElementsPositions() {
+    boatXPosition = 25;
+    boatYPosition = 32;
+
+    xSmallIceberg = 65 + (50 * Math.floor(Math.random()*10));
+    ySmallIceberg = 5 + (50 * Math.floor(Math.random()*7)); 
+
+    do {
+        flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
+        flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
+
+    } while((flagXPosition == xSmallIceberg + 15) && (flagYPosition == ySmallIceberg + 35));
+    
+  
+    do {
+        holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
+        holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
+
+    } while((holeXPosition == flagXPosition - 5) && (holeYPosition == flagYPosition - 15) || (holeXPosition == xSmallIceberg + 10) && (holeYPosition == ySmallIceberg + 20));
+}
 
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
-    drawBoard();
+    createElementsPositions();
+    drawBoard(gameOver);
 }
 
 function drawBoard(gameOver) {
@@ -46,12 +65,18 @@ function drawBoard(gameOver) {
     }
     ctx.restore();
 
-    drawBoat(boatXPosition, boatYPosition);
+    if(boatXPosition > 0 && boatYPosition > 0) {
+        drawBoat(boatXPosition, boatYPosition);
+
+    }
+
     drawHole(holeXPosition, holeYPosition);
+
     drawFlagPoint(flagXPosition, flagYPosition);
+
     drawSmallIceberg(xSmallIceberg, ySmallIceberg);
-    drawMediumIceberg(xMediumIceberg, yMediumIceberg);
-    drawBigIceberg(xBigIceberg, yBigIceberg);
+    //drawMediumIceberg(xMediumIceberg, yMediumIceberg);
+    //drawBigIceberg(xBigIceberg, yBigIceberg);
 
     if(gameOver) {
         ctx.font = "60px Georgia";
@@ -234,61 +259,110 @@ function drawBigIceberg(x,y) {
 }
 
 function moveBoat(e) {
-    gameOver = false;
-    if(e.key == "ArrowUp") {
-        boatYPosition -= 50;
-
-        if(boatYPosition < 0) {
-            boatYPosition = 32;
-        }
-
-    } else if (e.key == "ArrowDown") {
-        boatYPosition += 50;
-
-        if(boatYPosition > 400) {
-            boatYPosition = 382;
-        }
-
-    } else if (e.key == "ArrowLeft") {
-        boatXPosition -= 50;
-
-        if(boatXPosition < 0) {
-            boatXPosition = 25;
-        }
-
-    } else if(e.key == "ArrowRight") {
-        boatXPosition += 50;
-
-        if(boatXPosition > 600) {
-            boatXPosition = 575;
-        }
-    }
     
-    distanceBoatAndFlag = distanceCalculation(boatXPosition, flagXPosition, boatYPosition, flagYPosition);
-    if(distanceBoatAndFlag < 15) {
-        flagXPosition = -10;
-        flagYPosition = -10;
+    if(boatXPosition > 0 && boatYPosition > 0) {
+        if(e.key == "ArrowUp") {
+            if((boatXPosition == xSmallIceberg + 10) && (boatYPosition == ySmallIceberg + 77)) {
+                boatYPosition = boatYPosition;
 
-        flagsCollected++;
+            } else {
+                boatYPosition -= 50;
+            }
+    
+            if(boatYPosition < 0) {
+                boatYPosition = 32;
+            }
+    
+        } else if (e.key == "ArrowDown") {
+            if((boatXPosition == xSmallIceberg + 10) && (boatYPosition == ySmallIceberg - 23)) {
+                boatYPosition = boatYPosition;
+            
+            } else {
+                boatYPosition += 50;
 
-        document.getElementById("flagsCounter").innerHTML = "Flags collected: " + flagsCollected;
+            }
+    
+            if(boatYPosition > 400) {
+                boatYPosition = 382;
+            }
+    
+        } else if (e.key == "ArrowLeft") {
+            if((boatXPosition == xSmallIceberg + 60) && (boatYPosition == ySmallIceberg + 27)) {
+                boatXPosition = boatXPosition;
+
+            } else {
+                boatXPosition -= 50;
+
+            }
+    
+            if(boatXPosition < 0) {
+                boatXPosition = 25;
+            }
+    
+        } else if(e.key == "ArrowRight") {
+            if((boatXPosition == xSmallIceberg - 40) && (boatYPosition == ySmallIceberg + 27)) {
+                boatXPosition = boatXPosition;
+
+            } else {
+                boatXPosition += 50;
+
+            }
+    
+            if(boatXPosition > 600) {
+                boatXPosition = 575;
+            }
+        }
+
+        distanceBoatAndFlag = distanceCalculation(boatXPosition, boatYPosition, flagXPosition, flagYPosition);
+        
+        if(distanceBoatAndFlag < 15) {
+            flagsCollected++;
+
+            flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
+            flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
+
+            document.getElementById("flagsCounter").innerHTML = "Flags collected: " + flagsCollected;
+        }
+
+        distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
+        
+        if(distanceBoatAndHole < 15) {
+            boatXPosition = -10;
+            boatYPosition = -10;
+            gameOver = true;
+        }
+
+/** 
+        console.log("--")
+        console.log("boat y: " + boatYPosition + " iceberg y: " + ySmallIceberg);
+        console.log("x boat: " + boatXPosition + " - x iceberg: " + xSmallIceberg);
+*/
     }
-
-    distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
-    if(distanceBoatAndHole < 15) {
-        boatXPosition = -10;
-        boatYPosition = -10;
-        gameOver = true;
-    }
+/**
     console.log("--");
     console.log("x boat: " + boatXPosition + " - y boat: " + boatYPosition);
     console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
     console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
     console.log("distance boat/flag: " + distanceBoatAndFlag);
     console.log("distance boat/hole: " + distanceBoatAndHole);
+*/
     drawBoard(gameOver);
 }
 
 function distanceCalculation(x1,y1,x2,y2) {
     return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
-} 
+}
+
+function resetGame() {
+    flagsCollected = 0;
+    gameOver = false;
+    
+    createElementsPositions();
+    drawBoard(gameOver);
+    
+    document.getElementById("flagsCounter").innerHTML = "Flags collected: " + flagsCollected;
+
+    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
+    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    console.log("x iceberg: " + xSmallIceberg + " - y iceberg: " + ySmallIceberg);
+}
