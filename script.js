@@ -5,6 +5,8 @@ let flagXPosition;
 let flagYPosition;
 let holeXPosition;
 let holeYPosition;
+let xSmallIcebergValues = [];
+let ySmallIcebergValues = [];
 let xSmallIceberg;
 let ySmallIceberg;
 //let xMediumIceberg = 310;
@@ -21,9 +23,14 @@ function createElementsPositions() {
     boatXPosition = 25;
     boatYPosition = 32;
 
-    xSmallIceberg = 65 + (50 * Math.floor(Math.random()*10));
-    ySmallIceberg = 5 + (50 * Math.floor(Math.random()*7)); 
+    while(xSmallIcebergValues.length < 6 ) {
+        xSmallIceberg = 65 + (50 * Math.floor(Math.random()*10));
+        ySmallIceberg = 5 + (50 * Math.floor(Math.random()*7));
 
+        xSmallIcebergValues.push(xSmallIceberg);
+        ySmallIcebergValues.push(ySmallIceberg);
+    }
+          
     do {
         flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
         flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
@@ -74,7 +81,7 @@ function drawBoard(gameOver) {
 
     drawFlagPoint(flagXPosition, flagYPosition);
 
-    drawSmallIceberg(xSmallIceberg, ySmallIceberg);
+    drawSmallIceberg(xSmallIcebergValues, ySmallIcebergValues);
     //drawMediumIceberg(xMediumIceberg, yMediumIceberg);
     //drawBigIceberg(xBigIceberg, yBigIceberg);
 
@@ -190,23 +197,31 @@ function drawFlagPoint(x,y) {
     ctx.restore();
 }
 
-function drawSmallIceberg(x,y) {
+// function SmallIcebergs(xValues, yValues) {
+//     this.
+// }
+
+function drawSmallIceberg(xValues,yValues) {
     ctx.save();
     ctx.beginPath();
     ctx.fillStyle = "PaleTurquoise";
     ctx.strokeStyle = "DarkBlue";
 
-    ctx.moveTo(x,y);
-    ctx.lineTo(x,y);
-    ctx.lineTo(x+20,y+4);
-    ctx.lineTo(x+25,y+25);
-    ctx.lineTo(x+15,y+40);
-    ctx.lineTo(x-5,y+30);
-    ctx.lineTo(x,y+20);
-    ctx.lineTo(x-5,y+10);
-    ctx.lineTo(x,y);
-    ctx.fill();
-    ctx.stroke(); 
+    for(let i = 0; i < xValues.length; i++) {
+        ctx.moveTo(xValues[i],yValues[i]);
+        ctx.lineTo(xValues[i],yValues[i]);
+        ctx.lineTo(xValues[i]+20,yValues[i]+4);
+        ctx.lineTo(xValues[i]+25,yValues[i]+25);
+        ctx.lineTo(xValues[i]+15,yValues[i]+40);
+        ctx.lineTo(xValues[i]-5,yValues[i]+30);
+        ctx.lineTo(xValues[i],yValues[i]+20);
+        ctx.lineTo(xValues[i]-5,yValues[i]+10);
+        ctx.lineTo(xValues[i],yValues[i]);
+        ctx.fill();
+        ctx.stroke(); 
+
+    }
+    
     ctx.restore();
 }
 
@@ -338,14 +353,7 @@ function moveBoat(e) {
         console.log("x boat: " + boatXPosition + " - x iceberg: " + xSmallIceberg);
 */
     }
-/**
-    console.log("--");
-    console.log("x boat: " + boatXPosition + " - y boat: " + boatYPosition);
-    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
-    console.log("distance boat/flag: " + distanceBoatAndFlag);
-    console.log("distance boat/hole: " + distanceBoatAndHole);
-*/
+    
     drawBoard(gameOver);
 }
 
@@ -356,13 +364,11 @@ function distanceCalculation(x1,y1,x2,y2) {
 function resetGame() {
     flagsCollected = 0;
     gameOver = false;
+    xSmallIcebergValues = [];
+    ySmallIcebergValues = [];
     
     createElementsPositions();
     drawBoard(gameOver);
     
     document.getElementById("flagsCounter").innerHTML = "Flags collected: " + flagsCollected;
-
-    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
-    console.log("x iceberg: " + xSmallIceberg + " - y iceberg: " + ySmallIceberg);
 }
