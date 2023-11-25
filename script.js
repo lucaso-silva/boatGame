@@ -1,18 +1,18 @@
 let ctx;
 let boatXPosition;
 let boatYPosition;
-let flagXPosition;
-let flagYPosition;
-let holeXPosition;
-let holeYPosition;
-let xSmallIcebergValues = [];
-let ySmallIcebergValues = [];
 let xMediumIcebergValues = [];
 let yMediumIcebergValues = [];
-let xSmallIceberg;
-let ySmallIceberg;
+let xSmallIcebergValues = [];
+let ySmallIcebergValues = [];
 let xMediumIceberg;
 let yMediumIceberg;
+let xSmallIceberg;
+let ySmallIceberg;
+let holeXPosition;
+let holeYPosition;
+let flagXPosition;
+let flagYPosition;
 //let xBigIceberg = 425;
 //let yBigIceberg = 55;
 let flagsCollected = 0;
@@ -21,48 +21,130 @@ let distanceBoatAndHole;
 let distanceBoatSmallIceberg;
 let gameOver = false;
 
-//NEED TO VALIDATE TO AVOID THE SAME COORDINATES
+
 function createElementsPositions() {
     boatXPosition = 25;
     boatYPosition = 32;
 
     while(xMediumIcebergValues.length < 4) {
+        let samePosition = false;
         xMediumIceberg = 60 + (50 * Math.floor(Math.random()*10));
         yMediumIceberg = 7 + (50 * Math.floor(Math.random()*7));
+        
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            if(xMediumIceberg == xMediumIcebergValues[i] || yMediumIceberg == yMediumIcebergValues[i]) {
+                samePosition = true;
+            }
+        }
 
-        xMediumIcebergValues.push(xMediumIceberg);
-        yMediumIcebergValues.push(yMediumIceberg);
+        if(!samePosition) {
+            xMediumIcebergValues.push(xMediumIceberg);
+            yMediumIcebergValues.push(yMediumIceberg);
+        }
     }
 
     while(xSmallIcebergValues.length < 7 ) {
+        let samePosition = false;
         xSmallIceberg = 65 + (50 * Math.floor(Math.random()*10));
         ySmallIceberg = 5 + (50 * Math.floor(Math.random()*7));
 
-        xSmallIcebergValues.push(xSmallIceberg);
-        ySmallIcebergValues.push(ySmallIceberg);
+        for(let i = 0; i < xSmallIcebergValues.length; i++) {
+            if(xSmallIceberg == xSmallIcebergValues[i] || ySmallIceberg == ySmallIcebergValues[i]) {
+                samePosition = true;
+            }
+        }
+
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            if(xSmallIceberg == xMediumIcebergValues[i] + 5 && ySmallIceberg == yMediumIcebergValues[i] + 48) {
+                samePosition = true;
+
+            } else if (xSmallIceberg == xMediumIcebergValues[i] + 5 && ySmallIceberg == yMediumIcebergValues[i] - 2) {
+                samePosition = true;
+            }
+        }
+
+        if(!samePosition) {
+            xSmallIcebergValues.push(xSmallIceberg);
+            ySmallIcebergValues.push(ySmallIceberg);
+        }
     }
           
+    do {
+        holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
+        holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
+        
+    } while(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+
     do {
         flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
         flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
 
-    } while((flagXPosition == xSmallIceberg + 15) && (flagYPosition == ySmallIceberg + 35));
-    
-  
-    do {
-        holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
-        holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
+    } while(!validFlagPosition(flagXPosition, flagYPosition, holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+          
+    // console.log("--");
+    // console.log("x values m iceberg: " + xMediumIcebergValues);
+    // console.log("y values m iceberg: " + yMediumIcebergValues);
+    // console.log("x values s iceberg: " + xSmallIcebergValues);
+    // console.log("y values s iceberg: " + ySmallIcebergValues);
+    // console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    // console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
 
-    } while((holeXPosition == flagXPosition - 5) && (holeYPosition == flagYPosition - 15) || (holeXPosition == xSmallIceberg + 10) && (holeYPosition == ySmallIceberg + 20));
-
-    console.log("x values iceberg: " + xMediumIcebergValues);
-    console.log("y values iceberg: " + yMediumIcebergValues);
 }
 
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
     createElementsPositions();
     drawBoard(gameOver);
+}
+
+function isSamePosition(x, y, xValues1, yValues1, xValues2, yValues2) {
+    let samePosition = false;
+
+    for(let i = 0; i < xValues1.length; i++) {
+        let xValue = xValues1[i];
+        let yValue = yValues1[i];
+
+        if((x == xValue + 15) && (y == yValue + 18) || (x == xValue + 15) && (y == yValue + 68)) {
+            samePosition = true;
+        }
+    }
+
+    for(let i = 0; i < xValues2.length; i++) {
+        let xValue = xValues2[i];
+        let yValue = yValues2[i];
+
+        if((x == xValue + 10) && y == yValue + 20) {
+            samePosition = true;
+        }
+    }
+    return samePosition;
+}
+
+function validFlagPosition(xFlag, yFlag, xHole, yHole, xValues1, yValues1, xValues2, yValues2) {
+    let validPosition = true;
+
+    if((xFlag == xHole + 5) && (yFlag == yHole + 15)) {
+        validPosition = false;
+    }
+
+    for(let i = 0; i < xValues1.length; i++) {
+        let xIceberg = xValues1[i];
+        let yIceberg = yValues1[i];
+
+        if((xFlag == xIceberg + 20) && (yFlag == yIceberg + 33) || (xFlag == xIceberg + 20) && (yFlag == yIceberg + 83)) {
+            validPosition = false;
+        }
+    }
+
+    for(let i = 0; i < xValues2.length; i++) {
+        let xIceberg = xValues2[i];
+        let yIceberg = yValues2[i];
+
+        if((xFlag == xIceberg + 15) && (yFlag == yIceberg + 35)) {
+            validPosition = false;
+        }
+    }
+    return validPosition;
 }
 
 function drawBoard(gameOver) {
@@ -98,7 +180,7 @@ function drawBoard(gameOver) {
     drawFlagPoint(flagXPosition, flagYPosition);
 
     drawSmallIceberg(xSmallIcebergValues, ySmallIcebergValues);
-    //drawMediumIceberg(xMediumIcebergValues, yMediumIcebergValues);
+    drawMediumIceberg(xMediumIcebergValues, yMediumIcebergValues);
     //drawBigIceberg(xBigIceberg, yBigIceberg);
 
     if(gameOver) {
@@ -387,11 +469,13 @@ function moveBoat(e) {
             gameOver = true;
         }
 
-/** 
+
         console.log("--")
-        console.log("boat y: " + boatYPosition + " iceberg y: " + ySmallIceberg);
-        console.log("x boat: " + boatXPosition + " - x iceberg: " + xSmallIceberg);
-*/
+        console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
+        console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
+        console.log(xMediumIcebergValues);
+        console.log(yMediumIcebergValues);
+
     }
     
     drawBoard(gameOver);
@@ -414,6 +498,15 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             } 
         }
 
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            xMediumIceberg = xMediumIcebergValues[i];
+            yMediumIceberg = yMediumIcebergValues[i];
+
+            if((boatXPosition == xMediumIceberg + 15) && (boatYPosition == yMediumIceberg + 125)) {
+                hit = true;
+            }
+        }
+
     } else if(event.key == "ArrowDown") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
@@ -422,6 +515,15 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             if((boatXPosition == xSmallIceberg + 10) && (boatYPosition == ySmallIceberg - 23)) {
                 hit = true;
             } 
+        }
+
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            xMediumIceberg = xMediumIcebergValues[i];
+            yMediumIceberg = yMediumIcebergValues[i];
+
+            if((boatXPosition == xMediumIceberg + 15) && (boatYPosition == yMediumIceberg - 25)) {
+                hit = true;
+            }
         }
 
     } else if(event.key == "ArrowLeft") {
@@ -434,6 +536,15 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             } 
         }
 
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            xMediumIceberg = xMediumIcebergValues[i];
+            yMediumIceberg = yMediumIcebergValues[i];
+
+            if((boatXPosition == xMediumIceberg + 65) && (boatYPosition == yMediumIceberg + 25) || (boatXPosition == xMediumIceberg + 65) && (boatYPosition == yMediumIceberg + 75)) {
+                hit = true;
+            }
+        }
+
     } else if(event.key == "ArrowRight") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
@@ -442,6 +553,15 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             if((boatXPosition == xSmallIceberg - 40) && (boatYPosition == ySmallIceberg + 27)) {
                 hit = true;
             } 
+        }
+
+        for(let i = 0; i < xMediumIcebergValues.length; i++) {
+            xMediumIceberg = xMediumIcebergValues[i];
+            yMediumIceberg = yMediumIcebergValues[i];
+
+            if((boatXPosition == xMediumIceberg - 35) && (boatYPosition == yMediumIceberg + 25) || (boatXPosition == xMediumIceberg - 35) && (boatYPosition == yMediumIceberg + 75)) {
+                hit = true;
+            }
         }
     }
 
