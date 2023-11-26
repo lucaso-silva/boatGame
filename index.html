@@ -7,11 +7,15 @@
         <title>CPSC 1045 - Final Project - Lucas Oliveira</title>
         <script src="script.js"></script>
     </head>
-    <body onload="setup()" onkeyup="moveBoat(event, gameOver)">
+    <body onload="setup()" onkeyup="saveMovements(event)">
         <h1>Collect Flags - Avoid the sea hole</h1>
+        <h3 id="movements">Movement Program: </h3>
+        <button onclick="runProgram(movementList)">Run Movements</button>
+        <br>
+        <br>
         <canvas id="drawingSurface" width="600" height="400" style="border-style: solid;"></canvas>
         <br>
-        <p id="flagsCounter">Flags collected: 0</p>
+        <p id="flagsCounter">Score: 0</p>
         <button onclick="resetGame()">Reset</button>
     </body>
 </html>
