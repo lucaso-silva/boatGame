@@ -319,10 +319,10 @@ function distanceCalculation(x1,y1,x2,y2) {
     return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
 }
 
-function hitIceberg(boatXPosition, boatYPosition, event) {
+function hitIceberg(boatXPosition, boatYPosition, direction) {
     let hit = false;
 
-    if(event.key == "ArrowUp") {
+    if(direction == "Up") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
             ySmallIceberg = ySmallIcebergValues[i];
@@ -341,7 +341,7 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             }
         }
 
-    } else if(event.key == "ArrowDown") {
+    } else if(direction == "Down") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
             ySmallIceberg = ySmallIcebergValues[i];
@@ -360,7 +360,7 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             }
         }
 
-    } else if(event.key == "ArrowLeft") {
+    } else if(direction == "Left") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
             ySmallIceberg = ySmallIcebergValues[i];
@@ -379,7 +379,7 @@ function hitIceberg(boatXPosition, boatYPosition, event) {
             }
         }
 
-    } else if(event.key == "ArrowRight") {
+    } else if(direction == "Right") {
         for(let i = 0; i < xSmallIcebergValues.length; i++) {
             xSmallIceberg = xSmallIcebergValues[i];
             ySmallIceberg = ySmallIcebergValues[i];
