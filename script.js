@@ -1,8 +1,11 @@
 let ctx;
 let boatXPosition;
 let boatYPosition;
+let boatMovement;
 let movementList = [];
 let movement = "";
+let index;
+let direction = "";
 let xMediumIcebergValues = [];
 let yMediumIcebergValues = [];
 let xSmallIcebergValues = [];
@@ -174,14 +177,11 @@ function drawBoard(gameOver) {
 
     }
 
-    //drawHoleCover();
-
     drawHole(holeXPosition, holeYPosition);
-
     drawFlagPoint(flagXPosition, flagYPosition);
-
     drawSmallIceberg(xSmallIcebergValues, ySmallIcebergValues);
     drawMediumIceberg(xMediumIcebergValues, yMediumIcebergValues);
+    //drawHoleCover();
     //drawBigIceberg(xBigIceberg, yBigIceberg);
 
     if(gameOver) {
@@ -214,98 +214,104 @@ function saveMovements(e) {
 
     document.getElementById("movements").innerHTML = "Movement Program: " + movementList;
    
-    console.log(movementList);
-    //console.log("hello world!!"); 
+    // console.log(movementList);
 }
 
-function runProgram(movementList) {
-    console.log("movement list: " + movementList);
-
-    // while(movementList.length >= 0) {
-    //     direction = movementList.pop();
-    //     moveBoat(direction);
-    //     console.log("movement list: " + movementList);  
-    // }
+function runProgram() {
+    index = 0;
+    boatMovement = setInterval(moveBoat, 500);
 }
 
-function moveBoat(direction) {
-    if(direction == "Up") {
-        if(hitIceberg(boatXPosition,boatYPosition,direction)) {
-            boatYPosition = boatYPosition;
+function moveBoat() {
+    direction = movementList[index];
+    
+    if(index == 5) {
+        clearInterval(boatMovement);
+        document.getElementById("movements").innerHTML = "Movement Program: ";
+        movementList = [];
+        return;
 
-        } else {
-            boatYPosition -= 50;
-        }
-
-        if(boatYPosition < 0) {
-            boatYPosition = 32;
-        }
-
-    } else if (direction == "Down") {
-        if(hitIceberg(boatXPosition,boatYPosition,direction)) {
-            boatYPosition = boatYPosition;
+    } else {
+        if(direction == "Up") {
+            if(hitIceberg(boatXPosition,boatYPosition,direction)) {
+                boatYPosition = boatYPosition;
+    
+            } else {
+                boatYPosition -= 50;
+            }
+    
+            if(boatYPosition < 0) {
+                boatYPosition = 32;
+            }
+    
+        } else if (direction == "Down") {
+            if(hitIceberg(boatXPosition,boatYPosition,direction)) {
+                boatYPosition = boatYPosition;
+            
+            } else {
+                boatYPosition += 50;
+            }
+    
+            if(boatYPosition > 400) {
+                boatYPosition = 382;
+            }
         
-        } else {
-            boatYPosition += 50;
-        }
-
-        if(boatYPosition > 400) {
-            boatYPosition = 382;
+        } else if (direction == "Left") {
+            if(hitIceberg(boatXPosition,boatYPosition,direction)) {
+                boatXPosition = boatXPosition;
+    
+            } else {
+                boatXPosition -= 50;
+            }
+    
+            if(boatXPosition < 0) {
+                boatXPosition = 25;
+            }
+    
+        } else if(direction == "Right") {
+            if(hitIceberg(boatXPosition,boatYPosition,direction)) {
+                boatXPosition = boatXPosition;
+    
+            } else {
+                boatXPosition += 50;
+            }
+    
+            if(boatXPosition > 600) {
+                boatXPosition = 575;
+            }
         }
     
-    } else if (direction == "Left") {
-        if(hitIceberg(boatXPosition,boatYPosition,direction)) {
-            boatXPosition = boatXPosition;
-
-        } else {
-            boatXPosition -= 50;
-        }
-
-        if(boatXPosition < 0) {
-            boatXPosition = 25;
-        }
-
-    } else if(direction == "Right") {
-        if(hitIceberg(boatXPosition,boatYPosition,direction)) {
-            boatXPosition = boatXPosition;
-
-        } else {
-            boatXPosition += 50;
-        }
-
-        if(boatXPosition > 600) {
-            boatXPosition = 575;
-        }
-    }
-
-    distanceBoatAndFlag = distanceCalculation(boatXPosition, boatYPosition, flagXPosition, flagYPosition);
-    
-    if(distanceBoatAndFlag < 15) {
-        flagsCollected++;
-
-        do {
-            flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
-            flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
-    
-        } while(!validFlagPosition(flagXPosition, flagYPosition, holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+        distanceBoatAndFlag = distanceCalculation(boatXPosition, boatYPosition, flagXPosition, flagYPosition);
         
-        document.getElementById("flagsCounter").innerHTML = "Score: " + flagsCollected * 100;
-    }
-
-    distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
+        if(distanceBoatAndFlag < 15) {
+            flagsCollected++;
     
-    if(distanceBoatAndHole < 15) {
-        boatXPosition = -10;
-        boatYPosition = -10;
-        gameOver = true;
+            do {
+                flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
+                flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
+        
+            } while(!validFlagPosition(flagXPosition, flagYPosition, holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+            
+            document.getElementById("score").innerHTML = "Score: " + flagsCollected * 100;
+        }
+    
+        distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
+        
+        if(distanceBoatAndHole < 15) {
+            boatXPosition = -10;
+            boatYPosition = -10;
+            gameOver = true;
+        } 
     }
-
+    
+    index++;
+    
     // console.log("--")
     // console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
     // console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
     // console.log(xMediumIcebergValues);
     // console.log(yMediumIcebergValues);
-
+    console.log(movementList);
     drawBoard(gameOver);
 }
 
@@ -408,7 +414,7 @@ function resetGame() {
     createElementsPositions();
     drawBoard(gameOver);
     
-    document.getElementById("flagsCounter").innerHTML = "Score: " + flagsCollected;
+    document.getElementById("score").innerHTML = "Score: " + flagsCollected;
 }
 
 
