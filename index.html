@@ -10,14 +10,14 @@
     <body onload="setup()" onkeyup="saveMovements(event)">
         <h1>Collect Flags - Avoid the sea hole</h1>
         <h3 id="movements">Movement Program: </h3>
-        <button onclick="runProgram()">Run Movements</button>
+        <button onclick="runProgram()">Run Movements</button> <span id="errorMsg" style="display: none;"></span>
         <br>
         <br>
 
         <canvas id="drawingSurface" width="600" height="400" style="border-style: solid;"></canvas>
         
         <br>
-        <p id="score">Score: 0</p>
+        <p id="score" style="font-weight: bold; font-size: 1.15em;">Score: 0</p>
         <button onclick="resetGame()">Reset</button>
     </body>
 </html>

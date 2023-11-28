@@ -26,6 +26,7 @@ let score = 0;
 let distanceBoatAndFlag;
 let distanceBoatAndHole;
 let gameOver = false;
+let movementsMsg = "Movement Program: ";
 
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
@@ -165,16 +166,16 @@ function drawBoard(gameOver) {
     }
     ctx.restore();
 
-    if(boatXPosition > 0 && boatYPosition > 0) {
-        drawBoat(boatXPosition, boatYPosition);
-
-    }
-
     drawHole(holeXPosition, holeYPosition);
     drawFlagPoint(flagXPosition, flagYPosition);
     drawSmallIceberg(xSmallIcebergValues, ySmallIcebergValues);
     drawMediumIceberg(xMediumIcebergValues, yMediumIcebergValues);
     drawHoleCover(xHoleCover, yHoleCover);
+
+    if(boatXPosition > 0 && boatYPosition > 0) {
+        drawBoat(boatXPosition, boatYPosition);
+
+    }
 
     if(gameOver) {
         ctx.font = "60px Georgia";
@@ -199,28 +200,39 @@ function saveMovements(e) {
         movement = "Left";
 
     } else if(e.key == 'c' || e.key == 'C') {
-        movement = "Cover Hole";
+        movement = "Hole Cover";
     }
     
     if(movement.length > 0 && movementList.length < 5) {
-        let indexOfCover = movementList.indexOf("Cover Hole");
+        let indexOfCover = movementList.indexOf("Hole Cover");
 
-        if(indexOfCover == -1 || movement != "Cover Hole") {
+        if(indexOfCover == -1 || movement != "Hole Cover") {
             movementList.push(movement);
-            movement = "";
+            //movement = "";
         }
+        
+        movementsMsg+= movement + " ";
     }
-    document.getElementById("movements").innerHTML = "Movement Program: " + movementList;
+    document.getElementById("movements").innerHTML = movementsMsg;
 
 }
 
 function runProgram() {
-    index = 0;
-    boatMovement = setInterval(moveBoat, 900);
+    if(movementList.length == 5) {
+        index = 0;
+        boatMovement = setInterval(moveBoat, 900);   
+        movementsMsg = "Movement Program: "; 
+        document.getElementById("errorMsg").style.display = "none";
+    
+    } else {
+        console.log("You need to add 5 movements.");
+        document.getElementById("errorMsg").innerHTML = "You need to add 5 movements before Run or wait until the current movements finish";
+        document.getElementById("errorMsg").style.display = "inline-block";
+    }
 }
 
 function moveBoat() {
-    direction = movementList[index];
+    direction = movementList.splice(0,1);
 
     if(index == 5 || gameOver) {
         clearInterval(boatMovement);
@@ -230,7 +242,6 @@ function moveBoat() {
         yHoleCover = -20;
 
     } else {
-        
         if(direction == "Up") {
             if(hitIceberg(boatXPosition,boatYPosition,direction)) {
                 boatYPosition = boatYPosition;
@@ -279,7 +290,7 @@ function moveBoat() {
                 boatXPosition = 575;
             }
 
-        } else if(direction == "Cover Hole") {
+        } else if(direction == "Hole Cover") {
 
             do {
                 xHoleCover = 75 + (50 * Math.floor(Math.random()*10));
@@ -288,12 +299,16 @@ function moveBoat() {
             } while(isSamePosition(xHoleCover, yHoleCover, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
         }
 
-        do {
-            holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
-            holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
-            
-        } while(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
-     
+        holeXPosition -= 50;
+
+        if(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues) || holeXPosition < 0) {
+            do {
+                holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
+                holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
+                
+            } while(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+        }
+
         if((holeXPosition == flagXPosition - 5) && (holeYPosition == flagYPosition - 15)) {
             score-= 50;
             console.log("flag lost! -50 points");
@@ -315,8 +330,6 @@ function moveBoat() {
                 flagYPosition = 40 + (50 * Math.floor(Math.random()*7));
         
             } while(!validFlagPosition(flagXPosition, flagYPosition, holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
-            
-            document.getElementById("score").innerHTML = "Score: " + score;
         }
     
         distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
@@ -331,7 +344,7 @@ function moveBoat() {
             score += 150;
             xHoleCover = -20;
             yHoleCover = -20;
-
+            console.log("Hole covered! +150 points");
             do {
                 holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
                 holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
@@ -339,19 +352,19 @@ function moveBoat() {
             } while(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));    
         }
     }
-    
+
     index++;
-    console.log("--")
-    console.log("interval: " + index);
+    document.getElementById("score").innerHTML = "Score: " + score;
     drawBoard(gameOver);
     
     //console.log("--")
-    // console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
-    console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
-    // console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
-    // console.log(xMediumIcebergValues);
-    // console.log(yMediumIcebergValues);
+    //console.log("interval: " + index);
+    //console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
+    //console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
+    //console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    //console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
+    //console.log(xMediumIcebergValues);
+    //console.log(yMediumIcebergValues);
     //console.log(movementList);
 }
 
@@ -438,7 +451,6 @@ function hitIceberg(boatXPosition, boatYPosition, direction) {
             }
         }
     }
-
     return hit;
 }
 
@@ -455,6 +467,8 @@ function resetGame() {
     drawBoard(gameOver);
     
     document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("movements").innerHTML = "Movement Program:";
+    document.getElementById("errorMsg").style.display = "none";
 }
 
 
@@ -626,17 +640,6 @@ function drawHoleCover(x, y) {
     ctx.lineTo(x,y-10);
     ctx.lineTo(x,y+10);
     ctx.stroke();
-    
-    // ctx.lineWidth = 2.5;
-    // ctx.beginPath();
-    // ctx.ellipse(x, y-1, x-71, y-16, 0*Math.PI, 0, 2*Math.PI);
-    // ctx.fill();
-    // ctx.stroke();
-
-    // ctx.beginPath();
-    // ctx.ellipse(x, y-6, x-65, y-20, 0*Math.PI, 0, 2*Math.PI);
-    // ctx.stroke();
-    // ctx.fill();
 
     ctx.restore();
 }
