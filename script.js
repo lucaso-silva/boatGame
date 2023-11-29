@@ -3,11 +3,6 @@
 let ctx;
 let boatXPosition;
 let boatYPosition;
-let boatMovement;
-let movementList = [];
-let movement = "";
-let index;
-let direction = "";
 let xMediumIcebergValues = [];
 let yMediumIcebergValues = [];
 let xSmallIcebergValues = [];
@@ -22,6 +17,9 @@ let flagXPosition;
 let flagYPosition;
 let xHoleCover; 
 let yHoleCover;
+let movementList = [];
+let boatMovement;
+let turn;
 let score = 0;
 let distanceBoatAndFlag;
 let distanceBoatAndHole;
@@ -160,7 +158,6 @@ function drawBoard(gameOver) {
             ctx.fill();
             ctx.translate(50,0);
         }
-        
         ctx.restore();
         ctx.translate(0,50);
     }
@@ -174,52 +171,58 @@ function drawBoard(gameOver) {
 
     if(boatXPosition > 0 && boatYPosition > 0) {
         drawBoat(boatXPosition, boatYPosition);
-
     }
 
     if(gameOver) {
         ctx.font = "60px Georgia";
         ctx.fillStyle = "red";
-        ctx.strokeStyle = "black"
+        ctx.strokeStyle = "black";
         ctx.fillText("Game Over", 150,200);
         ctx.strokeText("Game Over", 150,200);
     }
 }
 
-function saveMovements(e) {    
+function saveMovements(e) {
+    let movement = "";
+    let symbol = "";
+
     if(e.key == "ArrowUp") {
         movement = "Up";
+        symbol = "&#8593;";
         
     } else if(e.key == "ArrowRight") {
         movement = "Right";
+        symbol = "&#8594;";
        
     } else if(e.key == "ArrowDown") {
         movement = "Down";
+        symbol = "&#8595;";
         
     } else if(e.key == "ArrowLeft") {
         movement = "Left";
+        symbol = "&#8592;";
 
-    } else if(e.key == 'c' || e.key == 'C') {
+    } else if(e.key == 'm' || e.key == 'M') {
         movement = "Hole Cover";
-    }
-    
+        symbol = "&#8861;";
+    } 
+   
     if(movement.length > 0 && movementList.length < 5) {
         let indexOfCover = movementList.indexOf("Hole Cover");
 
         if(indexOfCover == -1 || movement != "Hole Cover") {
             movementList.push(movement);
-            //movement = "";
+            movementsMsg+= symbol + " ";    
         }
         
-        movementsMsg+= movement + " ";
     }
     document.getElementById("movements").innerHTML = movementsMsg;
-
+    //console.log(movementList);
 }
 
 function runProgram() {
     if(movementList.length == 5) {
-        index = 0;
+        turn = 0;
         boatMovement = setInterval(moveBoat, 900);   
         movementsMsg = "Movement Program: "; 
         document.getElementById("errorMsg").style.display = "none";
@@ -232,14 +235,14 @@ function runProgram() {
 }
 
 function moveBoat() {
-    direction = movementList.splice(0,1);
+    let direction = movementList.splice(0,1);
 
-    if(index == 5 || gameOver) {
+    if(turn == 5 || gameOver) {
         clearInterval(boatMovement);
-        document.getElementById("movements").innerHTML = "Movement Program: ";
         movementList = [];
         xHoleCover = -20;
         yHoleCover = -20;
+        document.getElementById("movements").innerHTML = "Movement Program: ";
 
     } else {
         if(direction == "Up") {
@@ -353,12 +356,12 @@ function moveBoat() {
         }
     }
 
-    index++;
+    turn++;
     document.getElementById("score").innerHTML = "Score: " + score;
     drawBoard(gameOver);
     
     //console.log("--")
-    //console.log("interval: " + index);
+    //console.log("interval: " + turn);
     //console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
     //console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
     //console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
@@ -470,7 +473,6 @@ function resetGame() {
     document.getElementById("movements").innerHTML = "Movement Program:";
     document.getElementById("errorMsg").style.display = "none";
 }
-
 
 function drawBoat(x,y) {
     //bottom
@@ -637,8 +639,8 @@ function drawHoleCover(x, y) {
     ctx.lineWidth = 3.5;
     ctx.fillStyle = "white"
     ctx.beginPath();
-    ctx.lineTo(x,y-10);
-    ctx.lineTo(x,y+10);
+    ctx.lineTo(x-10,y);
+    ctx.lineTo(x+10,y);
     ctx.stroke();
 
     ctx.restore();
