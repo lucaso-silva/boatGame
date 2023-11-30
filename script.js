@@ -21,11 +21,14 @@ let movementList = [];
 let boatMovement;
 let turn;
 let score = 0;
+let flagsCollected = 0;
+let holesCovered = 0;
+let flagsLost = 0;
 let distanceBoatAndFlag;
 let distanceBoatAndHole;
 let gameOver = false;
 let movementsMsg = "Movement Program: ";
-
+console.log("global: " + boatMovement);
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
     createElementsPositions();
@@ -174,11 +177,7 @@ function drawBoard(gameOver) {
     }
 
     if(gameOver) {
-        ctx.font = "60px Georgia";
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "black";
-        ctx.fillText("Game Over", 150,200);
-        ctx.strokeText("Game Over", 150,200);
+        displayGameOverInfo();
     }
 }
 
@@ -221,11 +220,12 @@ function saveMovements(e) {
 }
 
 function runProgram() {
-    if(movementList.length == 5) {
-        turn = 0;
+    if(boatMovement == undefined) {
+        turn = 1;
         boatMovement = setInterval(moveBoat, 900);   
         movementsMsg = "Movement Program: "; 
         document.getElementById("errorMsg").style.display = "none";
+        console.log("button: " + boatMovement);
     
     } else {
         console.log("You need to add 5 movements.");
@@ -237,13 +237,14 @@ function runProgram() {
 function moveBoat() {
     let direction = movementList.splice(0,1);
 
-    if(turn == 5 || gameOver) {
+    if(turn == 6 || gameOver) {
         clearInterval(boatMovement);
         movementList = [];
         xHoleCover = -20;
         yHoleCover = -20;
+        boatMovement = undefined;
         document.getElementById("movements").innerHTML = "Movement Program: ";
-
+        console.log("turn 6: " + boatMovement);
     } else {
         if(direction == "Up") {
             if(hitIceberg(boatXPosition,boatYPosition,direction)) {
@@ -314,7 +315,7 @@ function moveBoat() {
 
         if((holeXPosition == flagXPosition - 5) && (holeYPosition == flagYPosition - 15)) {
             score-= 50;
-            console.log("flag lost! -50 points");
+            flagsLost++;
 
             do {
                 flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
@@ -327,6 +328,7 @@ function moveBoat() {
         
         if(distanceBoatAndFlag < 15) {
             score += 100;
+            flagsCollected++;
     
             do {
                 flagXPosition = 80 + (50 * Math.floor(Math.random()*10));
@@ -341,13 +343,14 @@ function moveBoat() {
             boatXPosition = -10;
             boatYPosition = -10;
             gameOver = true;
-        } 
+        }
 
         if(xHoleCover == holeXPosition && yHoleCover == holeYPosition) {
             score += 150;
             xHoleCover = -20;
             yHoleCover = -20;
-            console.log("Hole covered! +150 points");
+            holesCovered++;
+
             do {
                 holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
                 holeYPosition = 25 + (50 * Math.floor(Math.random()*7));
@@ -459,12 +462,16 @@ function hitIceberg(boatXPosition, boatYPosition, direction) {
 
 function resetGame() {
     score = 0;
+    flagsCollected = 0;
+    flagsLost = 0;
+    holesCovered = 0;
     gameOver = false;
     xSmallIcebergValues = [];
     ySmallIcebergValues = [];
     xMediumIcebergValues = [];
     yMediumIcebergValues = [];
     movementList = [];
+    boatMovement = undefined;
     clearInterval(boatMovement);
     createElementsPositions();
     drawBoard(gameOver);
@@ -551,7 +558,7 @@ function drawFlagPoint(x,y) {
     ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = "black";
-    ctx.fillStyle = "yellow"
+    ctx.fillStyle = "yellow";
     ctx.ellipse(x, y, 15, 10, 0*Math.PI, Math.PI, 2*Math.PI);
     ctx.stroke();
     ctx.fill();
@@ -637,11 +644,32 @@ function drawHoleCover(x, y) {
     ctx.fill();
     
     ctx.lineWidth = 3.5;
-    ctx.fillStyle = "white"
     ctx.beginPath();
     ctx.lineTo(x-10,y);
     ctx.lineTo(x+10,y);
     ctx.stroke();
+
+    ctx.restore();
+}
+
+function displayGameOverInfo() {
+    ctx.save();
+
+    ctx.font = "60px Georgia";
+    ctx.fillStyle = "red";
+    ctx.strokeStyle = "black";
+    ctx.fillText("Game Over", 150,150);
+    ctx.strokeText("Game Over", 150,150);
+
+    ctx.font = "bold 22px Georgia";
+    ctx.fillStyle = "black";
+    ctx.fillText("flags collected ............. " + flagsCollected, 150, 185);
+    ctx.fillText("sea holes covered ........ " + holesCovered, 150, 215);
+    ctx.fillText("flags lost ...................... " + flagsLost, 150, 245);
+
+    ctx.fillStyle = "red";
+    ctx.fillText("Score ........................... " + score, 150, 295);
+    ctx.strokeText("Score ........................... " + score, 150, 295);
 
     ctx.restore();
 }
