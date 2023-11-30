@@ -26,9 +26,10 @@ let holesCovered = 0;
 let flagsLost = 0;
 let distanceBoatAndFlag;
 let distanceBoatAndHole;
+let distanceBoatAndCover;
 let gameOver = false;
 let movementsMsg = "Movement Program: ";
-console.log("global: " + boatMovement);
+
 function setup() {
     ctx = document.getElementById("drawingSurface").getContext("2d");
     createElementsPositions();
@@ -167,10 +168,10 @@ function drawBoard(gameOver) {
     ctx.restore();
 
     drawHole(holeXPosition, holeYPosition);
-    drawFlagPoint(flagXPosition, flagYPosition);
     drawSmallIceberg(xSmallIcebergValues, ySmallIcebergValues);
     drawMediumIceberg(xMediumIcebergValues, yMediumIcebergValues);
     drawHoleCover(xHoleCover, yHoleCover);
+    drawFlagPoint(flagXPosition, flagYPosition);
 
     if(boatXPosition > 0 && boatYPosition > 0) {
         drawBoat(boatXPosition, boatYPosition);
@@ -216,20 +217,23 @@ function saveMovements(e) {
         
     }
     document.getElementById("movements").innerHTML = movementsMsg;
-    //console.log(movementList);
 }
 
 function runProgram() {
-    if(boatMovement == undefined) {
+    if(movementList.length == 5 && boatMovement == undefined) {
         turn = 1;
         boatMovement = setInterval(moveBoat, 900);   
         movementsMsg = "Movement Program: "; 
         document.getElementById("errorMsg").style.display = "none";
-        console.log("button: " + boatMovement);
     
     } else {
-        console.log("You need to add 5 movements.");
-        document.getElementById("errorMsg").innerHTML = "You need to add 5 movements before Run or wait until the current movements finish";
+        if(movementList.length < 5) {
+            document.getElementById("errorMsg").innerHTML = "You need to add 5 movements before Run.";
+        }
+
+        if(boatMovement != undefined) {
+            document.getElementById("errorMsg").innerHTML = "You need to wait until the current movements finish";
+        }
         document.getElementById("errorMsg").style.display = "inline-block";
     }
 }
@@ -239,12 +243,9 @@ function moveBoat() {
 
     if(turn == 6 || gameOver) {
         clearInterval(boatMovement);
-        movementList = [];
-        xHoleCover = -20;
-        yHoleCover = -20;
         boatMovement = undefined;
         document.getElementById("movements").innerHTML = "Movement Program: ";
-        console.log("turn 6: " + boatMovement);
+        
     } else {
         if(direction == "Up") {
             if(hitIceberg(boatXPosition,boatYPosition,direction)) {
@@ -295,12 +296,8 @@ function moveBoat() {
             }
 
         } else if(direction == "Hole Cover") {
-
-            do {
-                xHoleCover = 75 + (50 * Math.floor(Math.random()*10));
-                yHoleCover = 25 + (50 * Math.floor(Math.random()*7));
-
-            } while(isSamePosition(xHoleCover, yHoleCover, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));
+            xHoleCover = boatXPosition;
+            yHoleCover = boatYPosition - 7;
         }
 
         holeXPosition -= 50;
@@ -338,18 +335,21 @@ function moveBoat() {
         }
     
         distanceBoatAndHole = distanceCalculation(boatXPosition, boatYPosition, holeXPosition, holeYPosition);
-        
-        if(distanceBoatAndHole < 15) {
+        distanceBoatAndCover = distanceCalculation(boatXPosition, boatYPosition, xHoleCover, yHoleCover);
+
+        if(distanceBoatAndHole < 15 || (distanceBoatAndHole < 15) && (distanceBoatAndCover < 15)) {
             boatXPosition = -10;
             boatYPosition = -10;
             gameOver = true;
+            console.log("game over");
         }
 
-        if(xHoleCover == holeXPosition && yHoleCover == holeYPosition) {
+        if((xHoleCover == holeXPosition) && (yHoleCover == holeYPosition) && (distanceBoatAndHole > 15)) {
             score += 150;
             xHoleCover = -20;
             yHoleCover = -20;
             holesCovered++;
+            console.log("hole covered");
 
             do {
                 holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
@@ -363,11 +363,11 @@ function moveBoat() {
     document.getElementById("score").innerHTML = "Score: " + score;
     drawBoard(gameOver);
     
-    //console.log("--")
-    //console.log("interval: " + turn);
-    //console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
+    console.log("--");
+    console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
     //console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    //console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
+    console.log("x hole Cover: " + xHoleCover + " - y hole Cover: " + yHoleCover);
     //console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
     //console.log(xMediumIcebergValues);
     //console.log(yMediumIcebergValues);
@@ -470,6 +470,8 @@ function resetGame() {
     ySmallIcebergValues = [];
     xMediumIcebergValues = [];
     yMediumIcebergValues = [];
+    xHoleCover = -20;
+    yHoleCover = -20;
     movementList = [];
     boatMovement = undefined;
     clearInterval(boatMovement);
@@ -601,9 +603,7 @@ function drawSmallIceberg(xValues,yValues) {
         ctx.lineTo(xValues[i],yValues[i]);
         ctx.fill();
         ctx.stroke(); 
-
     }
-    
     ctx.restore();
 }
 
@@ -655,6 +655,12 @@ function drawHoleCover(x, y) {
 function displayGameOverInfo() {
     ctx.save();
 
+    ctx.beginPath();
+    ctx.fillStyle = "WhiteSmoke";
+    ctx.rect(100, 100, 400, 200);
+    ctx.fill();
+    ctx.stroke();
+
     ctx.font = "60px Georgia";
     ctx.fillStyle = "red";
     ctx.strokeStyle = "black";
@@ -668,8 +674,8 @@ function displayGameOverInfo() {
     ctx.fillText("flags lost ...................... " + flagsLost, 150, 245);
 
     ctx.fillStyle = "red";
-    ctx.fillText("Score ........................... " + score, 150, 295);
-    ctx.strokeText("Score ........................... " + score, 150, 295);
+    ctx.fillText("Score ........................... " + score, 150, 285);
+    ctx.strokeText("Score ........................... " + score, 150, 285);
 
     ctx.restore();
 }
