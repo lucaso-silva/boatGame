@@ -186,57 +186,61 @@ function saveMovements(e) {
     let movement = "";
     let symbol = "";
 
-    if(e.key == "ArrowUp") {
-        movement = "Up";
-        symbol = "&#8593;";
-        
-    } else if(e.key == "ArrowRight") {
-        movement = "Right";
-        symbol = "&#8594;";
+    if(!gameOver) {
+        if(e.key == "ArrowUp") {
+            movement = "Up";
+            symbol = "&#8593;";
+            
+        } else if(e.key == "ArrowRight") {
+            movement = "Right";
+            symbol = "&#8594;";
+           
+        } else if(e.key == "ArrowDown") {
+            movement = "Down";
+            symbol = "&#8595;";
+            
+        } else if(e.key == "ArrowLeft") {
+            movement = "Left";
+            symbol = "&#8592;";
+    
+        } else if(e.key == 'c' || e.key == 'C') {
+            movement = "Hole Cover";
+            symbol = "&#8861;";
+        } 
        
-    } else if(e.key == "ArrowDown") {
-        movement = "Down";
-        symbol = "&#8595;";
-        
-    } else if(e.key == "ArrowLeft") {
-        movement = "Left";
-        symbol = "&#8592;";
-
-    } else if(e.key == 'c' || e.key == 'C') {
-        movement = "Hole Cover";
-        symbol = "&#8861;";
-    } 
-   
-    if(movement.length > 0 && movementList.length < 5) {
-        let indexOfCover = movementList.indexOf("Hole Cover");
-
-        if(indexOfCover == -1 || movement != "Hole Cover") {
-            movementList.push(movement);
-            movementsMsg+= symbol + " ";    
+        if(movement.length > 0 && movementList.length < 5) {
+            let indexOfCover = movementList.indexOf("Hole Cover");
+    
+            if(indexOfCover == -1 || movement != "Hole Cover") {
+                movementList.push(movement);
+                movementsMsg+= symbol + " ";    
+            }
+            
         }
-        
+        document.getElementById("movements").innerHTML = movementsMsg;
     }
-    document.getElementById("movements").innerHTML = movementsMsg;
 }
 
 function runProgram() {
-    if(movementList.length == 5 && boatMovement == undefined) {
-        turn = 1;
-        boatMovement = setInterval(moveBoat, 900);   
-        movementsMsg = "Movement Program: "; 
-        document.getElementById("errorMsg").style.display = "none";
-        document.getElementById("score").style.display = "block";
-        document.getElementById("instructions").style.display = "none";
+    if(!gameOver) {
+        if(movementList.length == 5 && boatMovement == undefined) {
+            turn = 1;
+            boatMovement = setInterval(moveBoat, 900);   
+            movementsMsg = "Movement Program: "; 
+            document.getElementById("errorMsg").style.display = "none";
+            document.getElementById("score").style.display = "block";
+            document.getElementById("instructions").style.display = "none";
+        
+        } else {
+            if(movementList.length < 5) {
+                document.getElementById("errorMsg").innerHTML = "You need to add 5 movements before Run.";
+            }
     
-    } else {
-        if(movementList.length < 5) {
-            document.getElementById("errorMsg").innerHTML = "You need to add 5 movements before Run.";
+            if(boatMovement != undefined) {
+                document.getElementById("errorMsg").innerHTML = "You need to wait until the current movements finish";
+            }
+            document.getElementById("errorMsg").style.display = "inline-block";
         }
-
-        if(boatMovement != undefined) {
-            document.getElementById("errorMsg").innerHTML = "You need to wait until the current movements finish";
-        }
-        document.getElementById("errorMsg").style.display = "inline-block";
     }
 }
 
@@ -667,7 +671,7 @@ function displayGameOverInfo() {
     ctx.font = "bold 22px Georgia";
     ctx.fillStyle = "DarkBlue";
 
-    if (score < 0) {
+    if (score <= 0) {
         ctx.fillStyle = "red";
     }
     ctx.fillText("Score......................... " + score, 160, 280);
