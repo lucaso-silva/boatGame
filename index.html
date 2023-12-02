@@ -7,6 +7,7 @@
         <title>CPSC 1045 - Final Project - Lucas Oliveira</title>
         <script src="script.js"></script>
     </head>
+
     <body onload="setup()" onkeyup="saveMovements(event)">
         <h1>Collect Flags - Avoid the sea hole</h1>
         <h3 id="movements">Movement Program: </h3>
@@ -15,9 +16,19 @@
         <br>
 
         <canvas id="drawingSurface" width="600" height="400" style="border-style: solid;"></canvas>
-        
+
         <br>
-        <p id="score" style="font-weight: bold; font-size: 1.15em;">Score: 0</p>
+        <p id="score" style="font-weight: bold; font-size: 1.15em; display: none;">Score: 0</p>
+        <div id="instructions" style="font-family: Georgia;">
+            <h4>How to play</h4>
+            <ul>
+                <li>Collect flags to earn 100 points, and avoid to be caught by the sea hole</li>
+                <li>Choose five movements to move the boat, and press the button Run</li>
+                <li>You can use one <b>Hole Cover</b> per turn, press the <b>letter “C”</b>.</li>
+                <li>Use the arrow keyboard to indicate the direction</li>
+                <li>If a sea hole is covered you will earn 150 points, and if a sea hole catches a flag you lose 50 points</li>
+            </ul>
+        </div>
         <button onclick="resetGame()">Reset</button>
     </body>
 </html>

@@ -202,7 +202,7 @@ function saveMovements(e) {
         movement = "Left";
         symbol = "&#8592;";
 
-    } else if(e.key == 'm' || e.key == 'M') {
+    } else if(e.key == 'c' || e.key == 'C') {
         movement = "Hole Cover";
         symbol = "&#8861;";
     } 
@@ -225,6 +225,8 @@ function runProgram() {
         boatMovement = setInterval(moveBoat, 900);   
         movementsMsg = "Movement Program: "; 
         document.getElementById("errorMsg").style.display = "none";
+        document.getElementById("score").style.display = "block";
+        document.getElementById("instructions").style.display = "none";
     
     } else {
         if(movementList.length < 5) {
@@ -341,7 +343,6 @@ function moveBoat() {
             boatXPosition = -10;
             boatYPosition = -10;
             gameOver = true;
-            console.log("game over");
         }
 
         if((xHoleCover == holeXPosition) && (yHoleCover == holeYPosition) && (distanceBoatAndHole > 15)) {
@@ -349,7 +350,6 @@ function moveBoat() {
             xHoleCover = -20;
             yHoleCover = -20;
             holesCovered++;
-            console.log("hole covered");
 
             do {
                 holeXPosition = 75 + (50 * Math.floor(Math.random()*10));
@@ -358,20 +358,9 @@ function moveBoat() {
             } while(isSamePosition(holeXPosition, holeYPosition, xMediumIcebergValues, yMediumIcebergValues, xSmallIcebergValues, ySmallIcebergValues));    
         }
     }
-
     turn++;
     document.getElementById("score").innerHTML = "Score: " + score;
-    drawBoard(gameOver);
-    
-    console.log("--");
-    console.log("x boat: " + boatXPosition + " - boat y: " + boatYPosition);
-    //console.log("x flag: " + flagXPosition + " - y flag: " + flagYPosition);
-    console.log("x hole: " + holeXPosition + " - y hole: " + holeYPosition);
-    console.log("x hole Cover: " + xHoleCover + " - y hole Cover: " + yHoleCover);
-    //console.log("x iceb: " + xMediumIceberg + " - y iceb: " + yMediumIceberg);
-    //console.log(xMediumIcebergValues);
-    //console.log(yMediumIcebergValues);
-    //console.log(movementList);
+    drawBoard(gameOver);    
 }
 
 function distanceCalculation(x1,y1,x2,y2) {
@@ -473,14 +462,16 @@ function resetGame() {
     xHoleCover = -20;
     yHoleCover = -20;
     movementList = [];
-    boatMovement = undefined;
     clearInterval(boatMovement);
     createElementsPositions();
     drawBoard(gameOver);
+    boatMovement = undefined;
     
     document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("movements").innerHTML = "Movement Program:";
     document.getElementById("errorMsg").style.display = "none";
+    document.getElementById("score").style.display = "none";
+    document.getElementById("instructions").style.display = "block";
 }
 
 function drawBoat(x,y) {
@@ -660,22 +651,27 @@ function displayGameOverInfo() {
     ctx.rect(100, 100, 400, 200);
     ctx.fill();
     ctx.stroke();
-
+    //game over
     ctx.font = "60px Georgia";
     ctx.fillStyle = "red";
     ctx.strokeStyle = "black";
-    ctx.fillText("Game Over", 150,150);
-    ctx.strokeText("Game Over", 150,150);
-
-    ctx.font = "bold 22px Georgia";
+    ctx.fillText("Game Over", 150,155);
+    ctx.strokeText("Game Over", 150,155);
+    //info points
+    ctx.font = "20px Verdana";
     ctx.fillStyle = "black";
-    ctx.fillText("flags collected ............. " + flagsCollected, 150, 185);
-    ctx.fillText("sea holes covered ........ " + holesCovered, 150, 215);
-    ctx.fillText("flags lost ...................... " + flagsLost, 150, 245);
+    ctx.fillText("flags collected............. " + flagsCollected, 165, 187);
+    ctx.fillText("sea holes covered........ " + holesCovered, 165, 217);
+    ctx.fillText("flags lost.................... " + flagsLost, 167, 247);
+    //score
+    ctx.font = "bold 22px Georgia";
+    ctx.fillStyle = "DarkBlue";
 
-    ctx.fillStyle = "red";
-    ctx.fillText("Score ........................... " + score, 150, 285);
-    ctx.strokeText("Score ........................... " + score, 150, 285);
+    if (score < 0) {
+        ctx.fillStyle = "red";
+    }
+    ctx.fillText("Score......................... " + score, 160, 280);
 
     ctx.restore();
 }
+    
