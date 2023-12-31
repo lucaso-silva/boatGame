@@ -186,7 +186,7 @@ function saveMovements(e) {
     let movement = "";
     let symbol = "";
 
-    if(!gameOver) {
+    if(!gameOver && boatMovement == undefined) {
         if(e.key == "ArrowUp") {
             movement = "Up";
             symbol = "&#8593;";
