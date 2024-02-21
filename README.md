@@ -23,6 +23,7 @@ It was developed at the end of the course Introduction to Web Programming, as on
 ## Built with
 - HTML ``<canvas>`` element
 - JavaScript
+- TailwindCss
 
 ## What I learned
 Through this project, I could improve my knowledge and apply a lot of concepts about JavaScript programming. 
